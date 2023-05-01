@@ -1,4 +1,5 @@
 #pragma else
+#include <string>
 
 class Fecha
 {
@@ -7,6 +8,7 @@ class Fecha
 
         void establecerFechaPorDefecto();
         bool esBisiesto();
+        void agregarDia();
 
     public:
         Fecha();
@@ -15,6 +17,10 @@ class Fecha
         int getDia();
         int getMes();
         int getAnio();
+
+        void agregarDias(int cantidadDias);
+        std::string toString(std::string formatoFecha = "DD/MM/YYYY");
+
 };
 
 void Fecha::establecerFechaPorDefecto()
@@ -30,6 +36,27 @@ bool Fecha::esBisiesto()
         return true;
     }
     return false;
+}
+
+void Fecha::agregarDia()
+{
+    int dias[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    if (esBisiesto()) {
+        dias[1]++;
+    }
+
+    _dia++;
+
+    if (_dia > dias[_mes-1]) {
+        _dia = 1;
+        _mes++;
+
+        if (_mes > 12) {
+            _mes = 1;
+            _anio++;
+        }
+    }
 }
 
 Fecha::Fecha()
@@ -49,7 +76,7 @@ Fecha::Fecha(int dia, int mes, int anio)
     }
     else
     {
-        int dias[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int dias[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
         if (esBisiesto()) {
             dias[1]++;
         }
@@ -71,4 +98,40 @@ int Fecha::getMes()
 int Fecha::getAnio()
 {
     return _anio;
+}
+
+void Fecha::agregarDias(int cantidadDias)
+{
+    if (cantidadDias > 0) {
+        for(int i = 0; i < cantidadDias; i++) {
+            agregarDia();
+        }
+    }
+}
+
+std::string Fecha::toString(std::string formatoFecha)
+{
+    std::string fechaFormateada = "";
+    std::string DD = std::to_string(_dia);
+    std::string MM = std::to_string(_mes);
+    std::string YYYY = std::to_string(_anio);
+
+    // DD/MM/YYYY
+    if (_dia < 10){
+        DD = "0" + std::to_string(_dia);
+    }
+    if (_mes < 10){
+        MM = "0" + std::to_string(_mes);
+    }
+
+    if (formatoFecha == "DD/MM/YYYY") {
+        fechaFormateada = DD + "/" + MM + "/" + YYYY;
+    }
+    else if (formatoFecha == "YYYY/MM/DD") {
+        fechaFormateada = YYYY + "/" + MM + "/" + DD;
+    }
+    else {
+        fechaFormateada = DD + "/" + MM + "/" + YYYY;
+    }
+    return fechaFormateada;
 }
